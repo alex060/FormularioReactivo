@@ -83,6 +83,19 @@ export function fechaNoFuturaValidator(
   return null;
 }
 
+/**
+ * Cifra la contraseña del usuario utilizando SHA-256 (Web Crypto API)
+ * para evitar la exposición de credenciales en texto plano en la consola y registros.
+ */
+export async function cifrarContrasenaSHA256(plainPassword: string): Promise<string> {
+  if (!plainPassword) return '';
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plainPassword);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.page.html',
@@ -202,7 +215,18 @@ export class RegistroPage implements OnInit {
 
     try {
       const rawData = this.registroForm.value;
-      console.log('Payload a enviar a la API REST:', rawData);
+
+      // Cifrado criptográfico SHA-256 para evitar mostrar la contraseña en texto plano en consola
+      const passwordHash = await cifrarContrasenaSHA256(rawData.password);
+      const payloadSeguro = {
+        nombre: rawData.nombre,
+        email: rawData.email,
+        password: `[SHA-256:${passwordHash}]`,
+        fechaNacimiento: rawData.fechaNacimiento,
+      };
+
+      console.log('Payload seguro a enviar a la API REST (contraseña cifrada):', payloadSeguro);
+      console.log('Hash criptográfico generado:', passwordHash);
 
       // Simulación de latencia de red asíncrona (1 segundo)
       await new Promise((resolve) => setTimeout(resolve, 1000));
