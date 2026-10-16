@@ -1,0 +1,2 @@
+# Mark Android native platform as vendored so GitHub Linguist only counts web code
+android/** linguist-vendored
