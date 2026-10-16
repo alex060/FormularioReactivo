@@ -41,6 +41,18 @@
           [errorText]="'Mínimo 8 caracteres, letras y números.'">
         </ion-input>
       </ion-item>
+
+      <!-- Campo Fecha de Nacimiento (Validación: no superior a hoy) -->
+      <ion-item>
+        <ion-input
+          label="Fecha de Nacimiento"
+          labelPlacement="floating"
+          type="date"
+          [max]="maxDate"
+          formControlName="fechaNacimiento"
+          [errorText]="getFechaErrorText()">
+        </ion-input>
+      </ion-item>
     </ion-list>
 
     <div class="ion-padding-top">

@@ -5,6 +5,8 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import {
   IonHeader,
@@ -17,6 +19,30 @@ import {
   IonButton,
   IonSpinner,
 } from '@ionic/angular';
+
+/**
+ * Validador personalizado para asegurar que la fecha de nacimiento no es posterior al día de hoy.
+ */
+export function fechaNoFuturaValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  if (!control.value) {
+    return null;
+  }
+  const fecha = new Date(control.value);
+  const hoy = new Date();
+  hoy.setHours(23, 59, 59, 999);
+
+  if (isNaN(fecha.getTime())) {
+    return { fechaInvalida: true };
+  }
+
+  if (fecha > hoy) {
+    return { fechaFutura: true };
+  }
+
+  return null;
+}
 
 @Component({
   selector: 'app-home',
@@ -38,11 +64,11 @@ import {
   ],
 })
 export class HomePage {
-  // Definición del formulario reactivo fuertemente tipado
   public registroForm: FormGroup;
-
-  // Uso de Signals para gestionar el estado de envío asíncrono
   public isSubmitting = signal<boolean>(false);
+
+  // Fecha máxima permitida (hoy en formato YYYY-MM-DD para el datepicker)
+  public maxDate: string = new Date().toISOString().split('T')[0];
 
   constructor(private fb: FormBuilder) {
     this.registroForm = this.fb.group({
@@ -55,17 +81,27 @@ export class HomePage {
           Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
         ],
       ],
+      fechaNacimiento: ['', [Validators.required, fechaNoFuturaValidator]],
     });
   }
 
-  // Getter de conveniencia para acceder a los controles en la vista
   get f() {
     return this.registroForm.controls;
   }
 
+  public getFechaErrorText(): string {
+    const control = this.registroForm.get('fechaNacimiento');
+    if (!control || !control.errors) return '';
+    if (control.errors['required']) return 'La fecha de nacimiento es obligatoria.';
+    if (control.errors['fechaFutura']) {
+      return 'La fecha de nacimiento no puede ser posterior a hoy.';
+    }
+    return 'Fecha de nacimiento no válida.';
+  }
+
   public async onSubmit(): Promise<void> {
     if (this.registroForm.invalid) {
-      this.registroForm.markAllAsTouched(); // Fuerza la visualización de errores
+      this.registroForm.markAllAsTouched();
       return;
     }
 
@@ -75,7 +111,6 @@ export class HomePage {
       const formData = this.registroForm.value;
       console.log('Payload a enviar a la API REST:', formData);
 
-      // Simulación de llamada asíncrona a un backend HTTP
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       this.registroForm.reset();
