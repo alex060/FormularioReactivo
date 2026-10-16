@@ -1,0 +1,227 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="secondary">
+    <ion-title>Registro Template-Driven</ion-title>
+    <ion-buttons slot="end">
+      <!-- Botón selector de Modo Oscuro / Claro -->
+      <ion-button (click)="toggleDarkMode()" fill="clear" aria-label="Cambiar modo de visualización">
+        <ion-icon slot="icon-only" [name]="isDarkMode() ? 'sunny' : 'moon'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barra de Navegación para Comparar Modelos de Formularios -->
+  <ion-toolbar color="light" class="nav-toolbar">
+    <ion-segment value="driven">
+      <ion-segment-button value="reactivo" [routerLink]="['/registro']">
+        <ion-label>1. Form Reactivo (Reactive)</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="driven" [routerLink]="['/driven']">
+        <ion-label>2. Form Plantilla (Driven)</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <div class="form-container">
+    <div class="header-banner">
+      <div class="icon-badge">
+        <ion-icon name="layers-outline"></ion-icon>
+      </div>
+      <h2>Modelo 2: Formulario Template-Driven</h2>
+      <p>Gestión declarativa en la plantilla HTML basada en directivas <code>[(ngModel)]</code> y variables <code>#form</code></p>
+    </div>
+
+    <!-- Tarjeta del Formulario Template-Driven -->
+    <ion-card class="main-card">
+      <ion-card-header>
+        <ion-card-title>Alta de Usuario (Template-Driven)</ion-card-title>
+        <ion-card-subtitle>Enfoque declarativo en la plantilla HTML</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form #drivenForm="ngForm" (ngSubmit)="onSubmit(drivenForm)">
+          <ion-list lines="full">
+            <!-- Campo Nombre Completo -->
+            <ion-item>
+              <ion-icon name="person-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Nombre completo"
+                labelPlacement="floating"
+                type="text"
+                name="nombre"
+                [(ngModel)]="usuario.nombre"
+                #nombreCtrl="ngModel"
+                required
+                minlength="3"
+                placeholder="Ej. Alejandro Pérez"
+                [errorText]="nombreCtrl.invalid && (nombreCtrl.touched || drivenForm.submitted) ? 'El nombre es obligatorio (mín. 3 caracteres).' : ''">
+              </ion-input>
+            </ion-item>
+
+            <!-- Campo Correo Electrónico -->
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Correo Electrónico"
+                labelPlacement="floating"
+                type="email"
+                inputmode="email"
+                name="email"
+                [(ngModel)]="usuario.email"
+                #emailCtrl="ngModel"
+                required
+                email
+                placeholder="usuario@dominio.com"
+                [errorText]="emailCtrl.invalid && (emailCtrl.touched || drivenForm.submitted) ? 'Introduzca un email válido.' : ''">
+              </ion-input>
+            </ion-item>
+
+            <!-- Campo Contraseña -->
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Contraseña"
+                labelPlacement="floating"
+                type="password"
+                name="password"
+                [(ngModel)]="usuario.password"
+                #passwordCtrl="ngModel"
+                required
+                pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                placeholder="Mín. 8 caract., letras y números"
+                [errorText]="passwordCtrl.invalid && (passwordCtrl.touched || drivenForm.submitted) ? 'Mínimo 8 caracteres, al menos una letra y un número.' : ''">
+              </ion-input>
+            </ion-item>
+
+            <!-- Campo Fecha de Nacimiento -->
+            <ion-item>
+              <ion-icon name="calendar-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Fecha de Nacimiento"
+                labelPlacement="floating"
+                type="date"
+                name="fechaNacimiento"
+                [max]="maxDate"
+                [(ngModel)]="usuario.fechaNacimiento"
+                #fechaCtrl="ngModel"
+                required
+                [errorText]="getFechaDrivenErrorText(fechaCtrl)">
+              </ion-input>
+            </ion-item>
+          </ion-list>
+
+          <div class="actions-container">
+            <!-- Botón Enviar -->
+            <ion-button
+              expand="block"
+              type="submit"
+              color="secondary"
+              class="submit-button"
+              [disabled]="drivenForm.invalid || isSubmitting() || esFechaFutura(usuario.fechaNacimiento)">
+              <span *ngIf="!isSubmitting()">Enviar Formulario Template-Driven</span>
+              <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tarjeta Comparativa: Template-Driven vs Reactive Forms -->
+    <ion-card class="comparison-card">
+      <ion-card-header>
+        <div class="badge-comparativa">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          <span>Dossier Técnico — Módulo 0488</span>
+        </div>
+        <ion-card-title>Comparativa Técnica entre Modelos</ion-card-title>
+        <ion-card-subtitle>Criterios de elección arquitectónica en Angular</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="comparison-table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Característica</th>
+                <th>Template-Driven Forms (Pág. actual)</th>
+                <th>Reactive Forms (/registro)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Enfoque</strong></td>
+                <td>Declarativo (Lógica en HTML)</td>
+                <td>Funcional / Programático (TypeScript)</td>
+              </tr>
+              <tr>
+                <td><strong>Sincronización</strong></td>
+                <td>Asíncrona (directiva <code>ngModel</code>)</td>
+                <td>Síncrona (objetos <code>FormControl</code>)</td>
+              </tr>
+              <tr>
+                <td><strong>Mutabilidad</strong></td>
+                <td>Mutable (modifica modelo directo)</td>
+                <td>Inmutable (devuelve nuevo estado)</td>
+              </tr>
+              <tr>
+                <td><strong>Escalabilidad</strong></td>
+                <td>Ideal para 2-3 campos sencillos</td>
+                <td>Alta (estándar Enterprise y Signals)</td>
+              </tr>
+              <tr>
+                <td><strong>Testing</strong></td>
+                <td>Requiere instanciar el DOM</td>
+                <td>Sencillo (test unitario sin DOM)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Resumen del Registro Realizado y Descarga PDF -->
+    @if (ultimoRegistro(); as registro) {
+      <ion-card class="result-card animate-fade-in">
+        <ion-card-header>
+          <div class="status-badge">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <span>Formulario Template-Driven Procesado</span>
+          </div>
+          <ion-card-title>Comprobante de Registro</ion-card-title>
+          <ion-card-subtitle>Referencia: {{ registro.idReferencia }}</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="summary-details">
+            <div class="summary-row">
+              <span class="label">Nombre:</span>
+              <span class="value">{{ registro.nombre }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Email:</span>
+              <span class="value">{{ registro.email }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Fecha Nacimiento:</span>
+              <span class="value">{{ registro.fechaNacimiento }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Fecha de Envío:</span>
+              <span class="value">{{ registro.fechaEnvio }}</span>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            color="secondary"
+            class="download-button"
+            (click)="descargarPdf()">
+            <ion-icon slot="start" name="download-outline"></ion-icon>
+            Descargar Datos en PDF
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
+</ion-content>
