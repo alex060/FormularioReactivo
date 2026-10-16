@@ -1,12 +1,54 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>FormularioReactivo</ion-title>
+    <ion-title>Registro de Usuario</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="welcome-container">
-    <h2>Práctica: Formularios Reactivos</h2>
-    <p>Proyecto inicializado para DAM2 Desarrollo de Interfaces.</p>
-  </div>
+  <!-- Enlace del FormGroup definido en TypeScript -->
+  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+    <ion-list lines="full">
+      <!-- Campo Nombre -->
+      <ion-item>
+        <ion-input
+          label="Nombre completo"
+          labelPlacement="floating"
+          type="text"
+          formControlName="nombre"
+          [errorText]="'El nombre es obligatorio (mín. 3 caracteres).'">
+        </ion-input>
+      </ion-item>
+
+      <!-- Campo Email con teclado específico para móviles -->
+      <ion-item>
+        <ion-input
+          label="Correo Electrónico"
+          labelPlacement="floating"
+          type="email"
+          inputmode="email"
+          formControlName="email"
+          [errorText]="'Introduzca un email válido.'">
+        </ion-input>
+      </ion-item>
+
+      <!-- Campo Contraseña -->
+      <ion-item>
+        <ion-input
+          label="Contraseña"
+          labelPlacement="floating"
+          type="password"
+          formControlName="password"
+          [errorText]="'Mínimo 8 caracteres, letras y números.'">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-padding-top">
+      <!-- Botón dinámico que responde al Signal -->
+      <ion-button expand="block" type="submit" [disabled]="registroForm.invalid || isSubmitting()">
+        <span *ngIf="!isSubmitting()">Registrarse</span>
+        <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
+      </ion-button>
+    </div>
+  </form>
 </ion-content>
