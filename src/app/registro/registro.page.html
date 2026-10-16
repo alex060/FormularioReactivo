@@ -1,12 +1,24 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>Registro de Usuario</ion-title>
+    <ion-title>Registro de Usuario (Reactivo)</ion-title>
     <ion-buttons slot="end">
       <!-- Botón selector de Modo Oscuro / Claro -->
       <ion-button (click)="toggleDarkMode()" fill="clear" aria-label="Cambiar modo de visualización">
         <ion-icon slot="icon-only" [name]="isDarkMode() ? 'sunny' : 'moon'"></ion-icon>
       </ion-button>
     </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barra de Navegación para Comparar Modelos de Formularios -->
+  <ion-toolbar color="light" class="nav-toolbar">
+    <ion-segment value="reactivo">
+      <ion-segment-button value="reactivo" [routerLink]="['/registro']">
+        <ion-label>1. Form Reactivo (Reactive)</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="driven" [routerLink]="['/driven']">
+        <ion-label>2. Form Plantilla (Driven)</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
@@ -16,15 +28,15 @@
       <div class="icon-badge">
         <ion-icon name="document-text-outline"></ion-icon>
       </div>
-      <h2>Formulario Reactivo</h2>
-      <p>Gestión avanzada de formularios con validaciones reactivas y descarga de comprobante</p>
+      <h2>Modelo 1: Formulario Reactivo</h2>
+      <p>Gestión basada en <code>FormGroup</code> y <code>FormControl</code> en TypeScript con validación síncrona</p>
     </div>
 
     <!-- Tarjeta del Formulario -->
     <ion-card class="main-card">
       <ion-card-header>
-        <ion-card-title>Alta de Nuevo Usuario</ion-card-title>
-        <ion-card-subtitle>Complete todos los campos requeridos</ion-card-subtitle>
+        <ion-card-title>Alta de Usuario (Reactive Forms)</ion-card-title>
+        <ion-card-subtitle>Enfoque funcional/programático en TypeScript</ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
@@ -92,7 +104,7 @@
               color="primary"
               class="submit-button"
               [disabled]="registroForm.invalid || isSubmitting()">
-              <span *ngIf="!isSubmitting()">Enviar Formulario</span>
+              <span *ngIf="!isSubmitting()">Enviar Formulario Reactivo</span>
               <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
             </ion-button>
           </div>

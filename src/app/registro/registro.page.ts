@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -25,6 +26,9 @@ import {
   IonCardTitle,
   IonCardSubtitle,
   IonCardContent,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
   AlertController,
   ToastController,
 } from '@ionic/angular';
@@ -40,6 +44,7 @@ import {
   calendarOutline,
   documentTextOutline,
   shieldCheckmarkOutline,
+  swapHorizontalOutline,
 } from 'ionicons/icons';
 import jsPDF from 'jspdf';
 
@@ -79,12 +84,13 @@ export function fechaNoFuturaValidator(
 }
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
+  selector: 'app-registro',
+  templateUrl: './registro.page.html',
+  styleUrls: ['./registro.page.scss'],
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     ReactiveFormsModule,
     IonHeader,
     IonToolbar,
@@ -102,9 +108,12 @@ export function fechaNoFuturaValidator(
     IonCardTitle,
     IonCardSubtitle,
     IonCardContent,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
   ],
 })
-export class HomePage implements OnInit {
+export class RegistroPage implements OnInit {
   private fb = inject(FormBuilder);
   private alertController = inject(AlertController);
   private toastController = inject(ToastController);
@@ -129,6 +138,7 @@ export class HomePage implements OnInit {
       calendarOutline,
       documentTextOutline,
       shieldCheckmarkOutline,
+      swapHorizontalOutline,
     });
 
     this.registroForm = this.fb.group({
