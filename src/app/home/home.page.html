@@ -1,6 +1,12 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>Registro de Usuario</ion-title>
+    <ion-buttons slot="end">
+      <!-- Botón selector de Modo Oscuro / Claro -->
+      <ion-button (click)="toggleDarkMode()" fill="clear" aria-label="Cambiar modo de visualización">
+        <ion-icon slot="icon-only" [name]="isDarkMode() ? 'sunny' : 'moon'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

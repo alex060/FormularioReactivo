@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -17,10 +17,23 @@ import {
   IonItem,
   IonInput,
   IonButton,
+  IonButtons,
+  IonIcon,
   IonSpinner,
   AlertController,
   ToastController,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  moon,
+  sunny,
+  checkmarkCircleOutline,
+  downloadOutline,
+  personOutline,
+  mailOutline,
+  lockClosedOutline,
+  calendarOutline,
+} from 'ionicons/icons';
 
 /**
  * Modelo de datos del registro validado
@@ -73,10 +86,12 @@ export function fechaNoFuturaValidator(
     IonItem,
     IonInput,
     IonButton,
+    IonButtons,
+    IonIcon,
     IonSpinner,
   ],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   private fb = inject(FormBuilder);
   private alertController = inject(AlertController);
   private toastController = inject(ToastController);
@@ -84,11 +99,23 @@ export class HomePage {
   public registroForm: FormGroup;
   public isSubmitting = signal<boolean>(false);
   public ultimoRegistro = signal<RegistroUsuario | null>(null);
+  public isDarkMode = signal<boolean>(false);
 
   // Fecha máxima permitida (hoy en formato YYYY-MM-DD para el datepicker)
   public maxDate: string = new Date().toISOString().split('T')[0];
 
   constructor() {
+    addIcons({
+      moon,
+      sunny,
+      checkmarkCircleOutline,
+      downloadOutline,
+      personOutline,
+      mailOutline,
+      lockClosedOutline,
+      calendarOutline,
+    });
+
     this.registroForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -101,6 +128,29 @@ export class HomePage {
       ],
       fechaNacimiento: ['', [Validators.required, fechaNoFuturaValidator]],
     });
+  }
+
+  ngOnInit(): void {
+    const savedTheme = localStorage.getItem('theme-dark');
+    if (savedTheme !== null) {
+      this.setDarkMode(savedTheme === 'true');
+    } else {
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      this.setDarkMode(prefersDark);
+    }
+  }
+
+  public toggleDarkMode(): void {
+    this.setDarkMode(!this.isDarkMode());
+  }
+
+  private setDarkMode(dark: boolean): void {
+    this.isDarkMode.set(dark);
+    document.documentElement.classList.toggle('ion-palette-dark', dark);
+    document.body.classList.toggle('dark', dark);
+    localStorage.setItem('theme-dark', dark.toString());
   }
 
   get f() {
@@ -137,7 +187,8 @@ export class HomePage {
         email: rawData.email,
         fechaNacimiento: rawData.fechaNacimiento,
         fechaEnvio: new Date().toLocaleString('es-ES'),
-        idReferencia: 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        idReferencia:
+          'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
       };
 
       this.ultimoRegistro.set(nuevoRegistro);
