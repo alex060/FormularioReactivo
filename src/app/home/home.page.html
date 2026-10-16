@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-title>Registro de Usuario</ion-title>
     <ion-buttons slot="end">
@@ -10,63 +10,139 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <!-- Enlace del FormGroup definido en TypeScript -->
-  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
-    <ion-list lines="full">
-      <!-- Campo Nombre -->
-      <ion-item>
-        <ion-input
-          label="Nombre completo"
-          labelPlacement="floating"
-          type="text"
-          formControlName="nombre"
-          [errorText]="'El nombre es obligatorio (mín. 3 caracteres).'">
-        </ion-input>
-      </ion-item>
-
-      <!-- Campo Email con teclado específico para móviles -->
-      <ion-item>
-        <ion-input
-          label="Correo Electrónico"
-          labelPlacement="floating"
-          type="email"
-          inputmode="email"
-          formControlName="email"
-          [errorText]="'Introduzca un email válido.'">
-        </ion-input>
-      </ion-item>
-
-      <!-- Campo Contraseña -->
-      <ion-item>
-        <ion-input
-          label="Contraseña"
-          labelPlacement="floating"
-          type="password"
-          formControlName="password"
-          [errorText]="'Mínimo 8 caracteres, letras y números.'">
-        </ion-input>
-      </ion-item>
-
-      <!-- Campo Fecha de Nacimiento (Validación: no superior a hoy) -->
-      <ion-item>
-        <ion-input
-          label="Fecha de Nacimiento"
-          labelPlacement="floating"
-          type="date"
-          [max]="maxDate"
-          formControlName="fechaNacimiento"
-          [errorText]="getFechaErrorText()">
-        </ion-input>
-      </ion-item>
-    </ion-list>
-
-    <div class="ion-padding-top">
-      <!-- Botón dinámico que responde al Signal -->
-      <ion-button expand="block" type="submit" [disabled]="registroForm.invalid || isSubmitting()">
-        <span *ngIf="!isSubmitting()">Registrarse</span>
-        <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
-      </ion-button>
+<ion-content class="ion-padding" [fullscreen]="true">
+  <div class="form-container">
+    <div class="header-banner">
+      <div class="icon-badge">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </div>
+      <h2>Formulario Reactivo</h2>
+      <p>Gestión avanzada de formularios con validaciones reactivas y descarga de comprobante</p>
     </div>
-  </form>
+
+    <!-- Tarjeta del Formulario -->
+    <ion-card class="main-card">
+      <ion-card-header>
+        <ion-card-title>Alta de Nuevo Usuario</ion-card-title>
+        <ion-card-subtitle>Complete todos los campos requeridos</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+          <ion-list lines="full">
+            <!-- Campo Nombre Completo -->
+            <ion-item>
+              <ion-icon name="person-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Nombre completo"
+                labelPlacement="floating"
+                type="text"
+                placeholder="Ej. Alejandro Pérez"
+                formControlName="nombre"
+                [errorText]="'El nombre es obligatorio (mín. 3 caracteres).'">
+              </ion-input>
+            </ion-item>
+
+            <!-- Campo Correo Electrónico -->
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Correo Electrónico"
+                labelPlacement="floating"
+                type="email"
+                inputmode="email"
+                placeholder="usuario@dominio.com"
+                formControlName="email"
+                [errorText]="'Introduzca un email válido.'">
+              </ion-input>
+            </ion-item>
+
+            <!-- Campo Contraseña -->
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Contraseña"
+                labelPlacement="floating"
+                type="password"
+                placeholder="Mín. 8 caract., letras y números"
+                formControlName="password"
+                [errorText]="'Mínimo 8 caracteres, al menos una letra y un número.'">
+              </ion-input>
+            </ion-item>
+
+            <!-- Campo Fecha de Nacimiento (Validación: no posterior a hoy) -->
+            <ion-item>
+              <ion-icon name="calendar-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-input
+                label="Fecha de Nacimiento"
+                labelPlacement="floating"
+                type="date"
+                [max]="maxDate"
+                formControlName="fechaNacimiento"
+                [errorText]="getFechaErrorText()">
+              </ion-input>
+            </ion-item>
+          </ion-list>
+
+          <div class="actions-container">
+            <!-- Botón Enviar / Registrarse -->
+            <ion-button
+              expand="block"
+              type="submit"
+              color="primary"
+              class="submit-button"
+              [disabled]="registroForm.invalid || isSubmitting()">
+              <span *ngIf="!isSubmitting()">Enviar Formulario</span>
+              <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tarjeta con Resumen del Último Envío y Botón de Descarga PDF -->
+    @if (ultimoRegistro(); as registro) {
+      <ion-card class="result-card animate-fade-in">
+        <ion-card-header>
+          <div class="status-badge">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <span>Formulario Enviado y Validado</span>
+          </div>
+          <ion-card-title>Comprobante de Registro</ion-card-title>
+          <ion-card-subtitle>Referencia: {{ registro.idReferencia }}</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="summary-details">
+            <div class="summary-row">
+              <span class="label">Nombre:</span>
+              <span class="value">{{ registro.nombre }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Email:</span>
+              <span class="value">{{ registro.email }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Fecha Nacimiento:</span>
+              <span class="value">{{ registro.fechaNacimiento }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Fecha de Envío:</span>
+              <span class="value">{{ registro.fechaEnvio }}</span>
+            </div>
+          </div>
+
+          <!-- Botón para descargar el PDF con los datos -->
+          <ion-button
+            expand="block"
+            color="success"
+            class="download-button"
+            (click)="descargarPdf()">
+            <ion-icon slot="start" name="download-outline"></ion-icon>
+            Descargar Datos en PDF
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
 </ion-content>
